@@ -29,3 +29,11 @@ def etl(
     documents = read_documents_from_disk(
         data_directory=notion_data_dir, nesting_level=1
     )
+
+    crawled_documents = crawl(documents=documents, max_workers=max_workers)
+    enhanced_documents = add_quality_score(
+        documents=crawled_documents,
+        model_id=quality_agent_model_id,
+        mock=quality_agent_mock,
+        max_workers=max_workers,
+    )

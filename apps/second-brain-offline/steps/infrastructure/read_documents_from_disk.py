@@ -22,6 +22,22 @@ def read_documents_from_disk(
         data_directory=data_directory, nesting_level=nesting_level
     )
 
+    for json_file in json_files:
+        page = Document.from_file(json_file)
+        pages.append(page)
+
+    logger.info(f"Successfully read {len(pages)} documents from disk.")
+
+    step_context = get_step_context()
+    step_context.add_output_metadata(
+        output_name="documents",
+        metadata={
+            "count": len(pages),
+        },
+    )
+
+    return pages
+
 
 
 def __get_json_files(data_directory:Path, nesting_level:int = 0) -> list[Path]:
@@ -35,6 +51,6 @@ def __get_json_files(data_directory:Path, nesting_level:int = 0) -> list[Path]:
                 nested_json_files = __get_json_files(
                     data_directory=database_dir, nesting_level=nesting_level -1
                 )
-                json_files.append(nested_json_files)
+                json_files.extend(nested_json_files)
 
         return json_files
