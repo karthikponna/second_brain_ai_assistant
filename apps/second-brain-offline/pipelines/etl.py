@@ -37,3 +37,16 @@ def etl(
         mock=quality_agent_mock,
         max_workers=max_workers,
     )
+
+    save_documents_to_disk(documents=enhanced_documents, output_dir=crawled_data_dir)
+    if to_s3:
+        upload_to_s3(
+            folder_path=crawled_data_dir,
+            s3_prefix="second_brain_course/crawled",
+            after="save_documents_to_disk",
+        )
+    ingest_to_mongodb(
+        models=enhanced_documents,
+        collection_name=load_collection_name,
+        clear_collection=True,
+    )
